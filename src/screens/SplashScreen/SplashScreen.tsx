@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
-import {View, Dimensions, Text, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import styles from './SplashScreen.styles';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -13,23 +14,9 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hoşgeldin!</Text>
+      <Text style={styles.text}>Film World</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 30,
-    color: '#000',
-  },
-});
 
 export default SplashScreen;

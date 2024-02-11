@@ -1,1 +1,1 @@
-export {InfoIcon, BackIcon} from './Icons';
+export {InfoIcon, BackIcon, SearchIcon} from './Icons';
