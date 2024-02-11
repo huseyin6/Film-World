@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, memo} from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,11 @@ import {
   VirtualizedList,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Header, SearchBox, Loading} from '../../components';
+import {Header, SearchBox} from '../../components';
 import {fetchFilms} from './HomeScreen.helper';
 import styles from './HomeScreen.styles';
 import {PRIMARY_COLOR} from '../../styles';
+import * as Progress from 'react-native-progress';
 
 interface Film {
   imdbID: number;
@@ -59,35 +60,50 @@ const HomeScreen = () => {
   };
 
   // For Pagination
-  const handleLoadMore = async () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
+  const handleLoadMoreFilms = async () => {
+    if (!loadingMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
 
-    setLoadingMore(true);
-    const data = await fetchFilms(searchQuery, nextPage);
-    setFilms(prevFilms => [...prevFilms, ...data]);
-    setLoadingMore(false);
+      setLoadingMore(true);
+      const data = await fetchFilms(searchQuery, nextPage);
+      setFilms(prevFilms => [...prevFilms, ...data]);
+      setLoadingMore(false);
+    }
   };
 
-  const renderItem = ({item}) => (
-    <View style={styles.filmContainer}>
-      <TouchableOpacity onPress={() => navigateToDetail(item.imdbID)}>
-        <View style={styles.item}>
-          <Image source={{uri: item.Poster}} style={styles.poster} />
-          <View style={styles.details}>
-            <Text style={styles.title}>{item.Title}</Text>
-            <Text style={styles.info}>
-              {item.Type} - {item.Year}
-            </Text>
+  // Use memo for performance optimizing for both Poster and FilmItem
+  const Poster = memo(({uri}: {uri: string}) => (
+    <Image source={{uri}} style={styles.poster} />
+  ));
+
+  const FilmItem = memo(
+    ({
+      item,
+      navigateToDetail,
+    }: {
+      item: Film;
+      navigateToDetail: (id: string) => void;
+    }) => (
+      <View style={styles.filmContainer}>
+        <TouchableOpacity onPress={() => navigateToDetail(item.imdbID)}>
+          <View style={styles.item}>
+            <Poster uri={item.Poster} />
+            <View style={styles.details}>
+              <Text style={styles.title}>{item.Title}</Text>
+              <Text style={styles.info}>
+                {item.Type} - {item.Year}
+              </Text>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+    ),
   );
 
-  if (loading) {
-    return <Loading visible={true} />;
-  }
+  const renderItem = ({item}) => (
+    <FilmItem item={item} navigateToDetail={navigateToDetail} />
+  );
 
   return (
     <View style={styles.container}>
@@ -97,32 +113,47 @@ const HomeScreen = () => {
         onSubmitEditing={handleSearch}
         placeholderText={'Type to Search Films...'}
       />
-      {films.length !== 0 ? (
-        <View style={styles.listContainer}>
-          <FlatList
-            data={films}
-            renderItem={renderItem}
-            keyExtractor={item => item.imdbID.toString()}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.2}
-            ListFooterComponent={
-              loadingMore && (
-                <ActivityIndicator size="large" color={PRIMARY_COLOR} />
-              )
-            }
+
+      {loading && (
+        <View style={styles.progressBar}>
+          <Progress.Bar
+            progress={0.4}
+            width={380}
+            height={9}
+            color={PRIMARY_COLOR}
           />
-        </View>
-      ) : (
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>There is nothing to show right now!</Text>
-          <Text style={styles.text}>
-            Please search for the films that you want to view.
-          </Text>
+          <Text style={styles.barText}>Loading Films...</Text>
         </View>
       )}
+
+      {!loading &&
+        (films.length !== 0 ? (
+          <View style={styles.listContainer}>
+            <FlatList
+              data={films}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              onEndReached={handleLoadMoreFilms}
+              onEndReachedThreshold={0.2}
+              ListFooterComponent={
+                loadingMore && (
+                  <ActivityIndicator size="large" color={PRIMARY_COLOR} />
+                )
+              }
+              removeClippedSubviews={true}
+            />
+          </View>
+        ) : (
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>There is nothing to show right now!</Text>
+            <Text style={styles.text}>
+              Please search for the films that you want to view.
+            </Text>
+          </View>
+        ))}
     </View>
   );
 };

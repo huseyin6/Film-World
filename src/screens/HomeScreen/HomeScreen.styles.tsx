@@ -59,6 +59,16 @@ const styles = StyleSheet.create({
     color: BLACK_COLOR,
     fontSize: width * 0.04,
   },
+  progressBar: {
+    flex: 1,
+    marginTop: width * 0.1,
+    alignItems: 'center',
+  },
+  barText: {
+    color: BLACK_COLOR,
+    fontSize: width * 0.04,
+    marginTop: width * 0.08,
+  },
 });
 
 export default styles;
