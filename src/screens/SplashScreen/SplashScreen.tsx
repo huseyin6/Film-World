@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import styles from './SplashScreen.styles';
 
 const SplashScreen = () => {
+  // Changes Maded
   const navigation = useNavigation();
 
   useEffect(() => {
