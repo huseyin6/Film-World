@@ -13,10 +13,10 @@ It is essentially an application used for searching movies and viewing their det
 
 ## Project Folder Hierarchy
 
-│ 
-└── src
-  ├── components        // reusable components
-  ├── config            // api and keys
-  ├── navigation        // navigation configuration for pages
-  ├── screens           // screens to be showed by react-navigation
-  ├── styles            // style parameters and definitions used throughout the project 
+    │ 
+    └── src
+    ├── components        // reusable components
+    ├── config            // api and keys
+    ├── navigation        // navigation configuration for pages
+    ├── screens           // screens to be showed by react-navigation
+    ├── styles            // style parameters and definitions used throughout the project 
