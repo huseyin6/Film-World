@@ -12,6 +12,7 @@ It is essentially an application used for searching movies and viewing their det
 * Movie details are stored locally using a preferred method, ensuring that the same movie details are not requested from the REST API again.
 
 ## Project Folder Hierarchy
+
 │ 
 └── src
   ├── components        // reusable components
